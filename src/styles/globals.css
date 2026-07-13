@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: theme('colors.background');
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-black text-foreground font-nunito antialiased;
+    position: relative;
+  }
+
+  /* Optional noise overlay for a bit of texture on the pitch black */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-1 ring-foreground ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* Layout */
+  .section-container {
+    @apply w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-[80px] md:py-[160px];
+  }
+
+  /* Typography System from design.md */
+  .hero-display {
+    @apply font-syne text-[56px] leading-[54px] tracking-[-0.03em] md:text-[124px] md:leading-[104px] md:tracking-[-0.05em] uppercase text-foreground;
+  }
+
+  .headline-lg {
+    @apply font-syne text-[40px] leading-[48px] md:text-[64px] md:leading-[72px] tracking-[-0.03em] uppercase text-foreground;
+  }
+
+  .headline-md {
+    @apply font-syne text-[24px] leading-[32px] md:text-[32px] md:leading-[40px] tracking-[-0.02em] uppercase text-foreground;
+  }
+
+  .body-lg {
+    @apply font-nunito font-[400] text-[18px] leading-[28px] md:text-[24px] md:leading-[36px] text-muted;
+  }
+
+  .body-md {
+    @apply font-nunito font-[400] text-[16px] leading-[24px] md:text-[18px] md:leading-[28px] text-muted;
+  }
+
+  .label-caps {
+    @apply font-nunito font-[700] text-[12px] leading-[16px] tracking-[0.1em] uppercase text-muted;
+  }
+
+  .metadata-text {
+    @apply font-nunito font-[400] text-[14px] leading-[20px] text-muted;
+  }
+
+  /* Brutalist Components */
+  .brutalist-border {
+    @apply border border-hairline;
+  }
+  
+  .shape-sharp {
+    @apply rounded-none;
+  }
+
+  .card-brutal {
+    @apply bg-surface border border-hairline p-8 md:p-12 shape-sharp;
+  }
+
+  .pill-brutal {
+    @apply inline-flex items-center px-4 py-2 font-nunito font-bold text-[12px] tracking-[0.1em] uppercase
+           bg-background border border-hairline text-foreground shape-sharp hover:bg-foreground hover:text-background transition-colors duration-200;
+  }
+
+  .accent-text {
+    @apply text-accent;
+  }
+}
+
+@layer utilities {
+  .active-tactile {
+    transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .active-tactile:active {
+    transform: scale(0.97);
+  }
+
+  /* Scroll-snap for mobile carousel */
+  .snap-carousel {
+    @apply flex overflow-x-auto snap-x snap-mandatory gap-6;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .snap-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .snap-carousel > * {
+    @apply snap-center flex-shrink-0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .active-tactile:active {
+      transform: none;
+    }
+  }
+}
