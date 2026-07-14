@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cinematicAudio } from '@/utils/audio';
@@ -70,32 +71,28 @@ export default function ProfileSummary() {
 
   const lastTickProgress = useRef(0);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.to('.scrub-word', {
-        opacity: 1,
-        stagger: 0.1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 60%', 
-          end: '+=120%',
-          scrub: true,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            // Play a tactile digital crown tick every 1.5% of scroll progress for higher resolution haptics
-            if (Math.abs(progress - lastTickProgress.current) > 0.015) {
-                cinematicAudio?.playDigitalCrownTick();
-                lastTickProgress.current = progress;
-            }
+  useGSAP(() => {
+    gsap.to('.scrub-word', {
+      opacity: 1,
+      stagger: 0.1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 60%', 
+        end: '+=120%',
+        scrub: true,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          // Play a tactile digital crown tick every 1.5% of scroll progress for higher resolution haptics
+          if (Math.abs(progress - lastTickProgress.current) > 0.015) {
+              cinematicAudio?.playDigitalCrownTick();
+              lastTickProgress.current = progress;
           }
         }
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+      }
+    });
+  }, { scope: sectionRef });
 
   return (
     <section id="summary" ref={sectionRef} className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24 overflow-hidden">

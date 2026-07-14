@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cinematicAudio } from '@/utils/audio';
@@ -16,7 +17,7 @@ export default function Skills() {
   const headerText = "Skills";
 
   // Animation variants for cascading letters
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -24,7 +25,7 @@ export default function Skills() {
     }
   };
   
-  const letterVariants = {
+  const letterVariants: any = {
     hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
@@ -33,7 +34,7 @@ export default function Skills() {
     }
   };
 
-  useEffect(() => {
+  useGSAP(() => {
     const mm = gsap.matchMedia();
 
     mm.add(
@@ -81,7 +82,7 @@ export default function Skills() {
     );
 
     return () => mm.revert();
-  }, []);
+  }, { scope: sectionRef });
 
   return (
     <section id="skills" ref={sectionRef} className="w-full h-[250vh] relative bg-background z-20">

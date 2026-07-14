@@ -5,7 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { experience } from '@/content/portfolio-data';
 import { cinematicAudio } from '@/utils/audio';
 
-function ExperienceRow({ job }: { job: any }) {
+interface JobExperience {
+  role: string;
+  company: string;
+  date: string;
+  bullets: string[];
+}
+
+function ExperienceRow({ job }: { job: JobExperience }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -119,7 +126,7 @@ export default function Experience() {
   const headerText = "Experience";
   
   // Animation variants for cascading letters
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -127,7 +134,7 @@ export default function Experience() {
     }
   };
   
-  const letterVariants = {
+  const letterVariants: any = {
     hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,

@@ -8,7 +8,7 @@ export default function Certifications() {
   const headerText = "Certifications";
 
   // Animation variants for cascading letters
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -16,7 +16,7 @@ export default function Certifications() {
     }
   };
   
-  const letterVariants = {
+  const letterVariants: any = {
     hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,

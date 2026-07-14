@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion, Variants } from 'framer-motion';
+import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { education } from '@/content/portfolio-data';
@@ -33,7 +34,7 @@ export default function Education() {
     }
   };
 
-  useEffect(() => {
+  useGSAP(() => {
     const mm = gsap.matchMedia();
 
     mm.add(
@@ -136,7 +137,7 @@ export default function Education() {
     );
 
     return () => mm.revert();
-  }, []);
+  }, { scope: sectionRef });
 
   return (
     <section id="education" ref={sectionRef} className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">

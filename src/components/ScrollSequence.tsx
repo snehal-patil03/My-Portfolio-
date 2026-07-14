@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import { cinematicAudio } from '@/utils/audio';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -105,7 +106,7 @@ export default function ScrollSequence({
   }, []);
 
   // Set up canvas sizing + GSAP ScrollTrigger
-  useEffect(() => {
+  useGSAP(() => {
     if (!isLoaded) return;
 
     const canvas = canvasRef.current;
@@ -124,75 +125,72 @@ export default function ScrollSequence({
     // Draw the first frame immediately
     drawFrame(0);
 
-    let ctx = gsap.context(() => {
-      // Initial setup for the intro elements
-      gsap.set('.intro-element', { opacity: 0, y: 40, filter: 'blur(12px)' });
-      let introVisible = false;
+    // Initial setup for the intro elements
+    gsap.set('.intro-element', { opacity: 0, y: 40, filter: 'blur(12px)' });
+    let introVisible = false;
 
-      // GSAP scroll-driven animation for the canvas sequence
-      const frameObj = { frame: 0 };
-      gsap.to(frameObj, {
-        frame: frameCount - 1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: container,
-          start: 'top top',
-          end: `+=${scrollSpan * 100}vh`,
-          pin: true,
-          scrub: true,
-          invalidateOnRefresh: true,
-          anticipatePin: 1,
-        },
-        onUpdate: () => {
-          const currentFrame = Math.round(frameObj.frame);
-          drawFrame(currentFrame);
+    // GSAP scroll-driven animation for the canvas sequence
+    const frameObj = { frame: 0 };
+    gsap.to(frameObj, {
+      frame: frameCount - 1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: container,
+        start: 'top top',
+        end: `+=${scrollSpan * 100}vh`,
+        pin: true,
+        scrub: true,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+      },
+      onUpdate: () => {
+        const currentFrame = Math.round(frameObj.frame);
+        drawFrame(currentFrame);
 
-          // --- ORGANIC AUDIO FILTER LOGIC ---
-          // Start the background track ONLY when the user starts scrolling
-          if (currentFrame > 0 && !cinematicAudio?.hasBgTrackStarted) {
-            cinematicAudio?.playBackgroundTrack();
-          }
+        // --- ORGANIC AUDIO FILTER LOGIC ---
+        // Start the background track ONLY when the user starts scrolling
+        if (currentFrame > 0 && !cinematicAudio?.hasBgTrackStarted) {
+          cinematicAudio?.playBackgroundTrack();
+        }
 
-          // Map the scroll progress (0.0 to 1.0) and send it to the audio engine
-          // This dynamically opens the Lowpass filter on the MP3 track to make it sound
-          // like the lotus is emerging from deep underwater into crystal clear air.
-          const progress = Math.max(0, Math.min(1, currentFrame / frameCount));
-          cinematicAudio?.setLotusProgress(progress);
+        // Map the scroll progress (0.0 to 1.0) and send it to the audio engine
+        // This dynamically opens the Lowpass filter on the MP3 track to make it sound
+        // like the lotus is emerging from deep underwater into crystal clear air.
+        const progress = Math.max(0, Math.min(1, currentFrame / frameCount));
+        cinematicAudio?.setLotusProgress(progress);
 
-          // Frame-triggered gorgeous GSAP Timeline
-          if (currentFrame >= 190 && !introVisible) {
-            introVisible = true;
-            // Sound removed by user request
-            gsap.to('.intro-element', {
-              opacity: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              duration: 1.4,
-              stagger: 0.2, // Cascades the text lines in one by one
-              ease: 'expo.out',
-              overwrite: 'auto',
-            });
-          } else if (currentFrame < 190 && introVisible) {
-            introVisible = false;
-            gsap.to('.intro-element', {
-              opacity: 0,
-              y: 40,
-              filter: 'blur(12px)',
-              duration: 0.8,
-              stagger: 0.05,
-              ease: 'power2.inOut',
-              overwrite: 'auto',
-            });
-          }
-        },
-      });
-    }, container);
+        // Frame-triggered gorgeous GSAP Timeline
+        if (currentFrame >= 190 && !introVisible) {
+          introVisible = true;
+          // Sound removed by user request
+          gsap.to('.intro-element', {
+            opacity: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 1.4,
+            stagger: 0.2, // Cascades the text lines in one by one
+            ease: 'expo.out',
+            overwrite: 'auto',
+          });
+        } else if (currentFrame < 190 && introVisible) {
+          introVisible = false;
+          gsap.to('.intro-element', {
+            opacity: 0,
+            y: 40,
+            filter: 'blur(12px)',
+            duration: 0.8,
+            stagger: 0.05,
+            ease: 'power2.inOut',
+            overwrite: 'auto',
+          });
+        }
+      },
+    });
 
     return () => {
       window.removeEventListener('resize', resize);
-      ctx.revert();
     };
-  }, [isLoaded, frameCount, scrollSpan, drawFrame]);
+  }, { dependencies: [isLoaded, frameCount, scrollSpan, drawFrame], scope: containerRef });
 
   return (
     <div ref={containerRef} className="relative w-full h-screen bg-black overflow-hidden">
